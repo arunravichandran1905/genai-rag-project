@@ -7,4 +7,4 @@ chunked_docs=chunk_text(text)
 print(f"Chunks are {chunked_docs}")
 
 embeddings=create_embeddings(chunked_docs)
-print(f"Total length of embeddings are {embeddings}")
+print(f"Total length of embeddings are {len(embeddings)} and {embeddings}")
