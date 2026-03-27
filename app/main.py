@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from app.services.processor import process_query
 
+#FasAPI handles the HTTP request handling.
+
 app=FastAPI()
 
 @app.get("/health")
