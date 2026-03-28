@@ -1,0 +1,19 @@
+import faiss
+
+
+class VectorStore():
+    def __init__(self, embeddings):
+        self.dimension=embeddings.shape[1]
+        self.index=faiss.IndexFlatL2(self.dimension)
+        self.index.add(embeddings)
+
+    def search(self, query, k):
+        distance, indices=self.index.search(query, k)
+        return indices
+    
+    
+
+
+
+
+
