@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from app.services.processor import process_query
+from app.rag.pipeline import run_rag
 
 #FasAPI handles the HTTP request handling.
 
@@ -16,7 +17,5 @@ class Queryvalidation(BaseModel):
 
 @app.post("/query")
 def query(request:Queryvalidation):
-    question=request.question
-    formatted_question=process_query(question)
-    return {"response":formatted_question}
-
+    answer=run_rag(request.question)
+    return {"response":answer}
