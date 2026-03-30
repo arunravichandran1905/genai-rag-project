@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.services.processor import process_query
 from app.rag.pipeline import run_rag
@@ -17,5 +17,9 @@ class Queryvalidation(BaseModel):
 
 @app.post("/query")
 def query(request:Queryvalidation):
-    answer=run_rag(request.question)
-    return {"response":answer}
+    try:
+        answer=run_rag(request.question)
+        return {"response":answer}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    

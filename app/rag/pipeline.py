@@ -1,9 +1,10 @@
-from sentence_transformers import SentenceTransformer
-from app.rag.ingest import load_documents, chunk_text, create_embeddings, embedding_model
+from app.rag.ingest import load_documents, chunk_text, create_embeddings
 from app.rag.retriever import VectorStore
 from openai import OpenAI
+import numpy as np
+import os
 
-client=OpenAI()
+client=OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 text=load_documents("data/sample.txt")
 chunks=chunk_text(text)
@@ -12,15 +13,18 @@ vector_store=VectorStore(embeddings)
 
 
 def run_rag(query:str):
-    q_embedding=embedding_model.encode([query])
-    index=vector_store.search(q_embedding, k=2)
+    q_embedding=client.embeddings.create(model="text-embedding-3-small", input=[query]).data[0].embedding
+    query_embedding=np.array([q_embedding]).astype("float32")
 
+    index=vector_store.search(query_embedding, k=2)
     retrieved_chunks=[chunks[indices] for indices in index[0]]
     print(f"Retrieved chunks are: \n {retrieved_chunks}")
+    context="\n".join(retrieved_chunks)
 
-    prompts= f""" Answer the question by given Context
+    prompts= f""" You must answer ONLY using the provided context.
+If answer is not in context, say "I don't know".
     Question: {query}  
-    Context: {retrieved_chunks}
+    Context: {context}
     """
 
     response=client.chat.completions.create(

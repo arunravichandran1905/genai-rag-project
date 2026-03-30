@@ -1,8 +1,7 @@
-from sentence_transformers import SentenceTransformer
+from openai import OpenAI
+import numpy as np
 
-
-embedding_model=SentenceTransformer("all-MiniLM-L6-v2")
-
+client=OpenAI()
 def load_documents(path:str):
     with open(path, "r") as f:
         text=f.read()
@@ -17,10 +16,16 @@ def chunk_text(text:str, chunk_size:int=100):
         print(f"{chunks} from chunking")
     return chunks
 
-def create_embeddings(chunks):
-    embeddings=embedding_model.encode(chunks)
-    return embeddings
 
+def create_embeddings(chunks):
+    response = client.embeddings.create(
+        model="text-embedding-3-small",
+        input=chunks
+    )
+
+    embeddings = [e.embedding for e in response.data]
+
+    return np.array(embeddings).astype("float32")
 
 
 
