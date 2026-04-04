@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from app.services.processor import process_query
 from app.rag.pipeline import run_rag
+
+from openai import OpenAI
 
 #FasAPI handles the HTTP request handling.
 
@@ -22,4 +23,6 @@ def query(request:Queryvalidation):
         return {"response":answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
     
